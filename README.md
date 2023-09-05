@@ -14,3 +14,10 @@ Web:
 	Python Flask  (spaeter auch mit JS)
 	sqlite3 as DB
 	simple HTML/CSS
+
+dependencies:
+    https://pypi.org/project/yfinance/
+    $ pip install yfinance --upgrade --no-cache-dir
+
+
+

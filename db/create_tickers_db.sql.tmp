@@ -1,0 +1,6 @@
+CREATE TABLE Tickers(
+   ISIN            TEXT     NOT NULL,
+   Name            TEXT     NOT NULL
+);
+INSERT INTO Tickers VALUES ('A', 'Agilent Technologies Inc. Common Stock');
+

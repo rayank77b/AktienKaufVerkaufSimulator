@@ -8,5 +8,9 @@ app = Flask(__name__)
 def root_index():  
     return "here we start";  
 
+@app.route('/stocks') 
+def stocks_index():
+    return "here we start";  
+    
 if __name__ =='__main__':  
     app.run(debug = WE_DEBUG)    
