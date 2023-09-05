@@ -1,16 +1,38 @@
 <!doctype html>
 <html>
-   <body>
-      <table border = 1>
+<body>
+    <table border = 1>
+        <tr>
+            <th> ISIN </th><td> {{data['isin']}} </td>
+        </tr>
+        <tr>
+            <th> Name </th><td> {{data['name']}} </td>
+        </tr>
+        <tr>
+            <th> Price </th><td> {{data['price']}} </td>
+        </tr>
+    </table>
+      
+    <br>
+    {% if data['we_have_it'] %}
+        Your Stock Values are
+        <table border = 1>
+        <tr><th>Volume</th><th>Price</th><th>Sum</th><th>Profit</th></tr>
+         {% for volumeid, volume in volumes.items() %}
+            {% set sum = 0 %}
             <tr>
-               <th> ISIN </th><td> {{data['isin']}} </td>
+               <td> {{ volume }} </td>
+               <td> {{ prices[volumeid] }} </td>
+               <td> {{ volume*prices[volumeid] }} </td>
+               {% set profit = (data['price']-prices[volumeid])*volume %}
+               <td> {{ '%.2f'%profit|float }} </td>
+               
             </tr>
-            <tr>
-               <th> Name </th><td> {{data['name']}} </td>
-            </tr>
-            <tr>
-               <th> Price </th><td> {{data['price']}} </td>
-            </tr>
-      </table>
-   </body>
+         {% endfor %}
+        </table>
+    {% else %}
+        You have none of this.
+    {% endif %}
+      
+</body>
 </html>
