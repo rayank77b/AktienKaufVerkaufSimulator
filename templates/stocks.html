@@ -2,10 +2,10 @@
 <html>
    <body>
       <table border = 1>
-        
+        <tr><th>ISIN</th><th>Name</th></tr>
          {% for ISIN, Name in stocks.items() %}
             <tr>
-               <td> {{ ISIN }} </td><td> {{ Name }} </td>
+               <td> <a href="/isin/{{ ISIN }}">{{ ISIN }}</a> </td><td> {{ Name }} </td>
             </tr>
          {% endfor %}
       </table>
