@@ -10,6 +10,14 @@ WE_DEBUG = True
 
 app = Flask(__name__) 
 
+def get_ask(isin):
+    stock = yf.Ticker(isin)
+    return stock.info['ask']
+
+def get_bid(isin):
+    stock = yf.Ticker(isin)
+    return stock.info['bid']
+
 @app.route('/') 
 def root_index():  
     return "here we start";  
@@ -37,8 +45,7 @@ def isin_name_info(isin):
     for row in cursor:
         data['name'] = row[1]
     
-    stock = yf.Ticker(isin)
-    data['price'] = stock.info['ask']
+    data['price'] = get_ask(isin)
     
     cursor = conn.execute("SELECT * from my_stock_values WHERE ISIN = ?", (isin,))
     sqldata = cursor.fetchall()
@@ -68,6 +75,34 @@ def buy_stock():
     conn.commit()
     conn.close()
     return redirect("/isin/%s"%isin, code=302)
+
+@app.route('/listmystocks') 
+def listmystocks():
+    isin = {}
+    buy_prices = {}
+    volumes = {}
+    vp = {}
+    bids = {}
+    conn = sqlite3.connect(db_name)
+    sql = "SELECT ISIN, buy_price, volume FROM my_stock_values ORDER BY ISIN"
+    cursor = conn.execute(sql)
+    cnt = 0
+    last_isin = ''
+    last_bid = 0.0
+    for row in cursor:
+        isin[cnt] = row[0]
+        buy_prices[cnt] = row[1]
+        volumes[cnt] = row[2]
+        vp[cnt] = float(row[1])*float(row[2])
+        if isin[cnt] == last_isin :
+            bids[cnt] = last_bid
+        else:
+            bids[cnt] = get_bid(isin[cnt])
+        last_isin = isin[cnt]
+        last_bid = bids[cnt]
+        cnt = cnt + 1
+    conn.close()
+    return render_template('listmystocks.html', isin = isin, buy_prices = buy_prices, volumes = volumes, vp = vp, bids = bids)
 
 if __name__ =='__main__':
     app.run(debug = WE_DEBUG)    

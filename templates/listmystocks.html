@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<body>
+    Your Stock Values are
+    <table border = 1>
+        <tr><th>Cnt</th><th>ISIN</th><th>Volume</th><th>Price</th><th>Sum</th><th>Bid</th><th>Profit</th><th>Sell</th></tr>
+        {% for i, isin in isin.items() %}
+            <tr>
+                <td> {{ i }} </td>
+                <td> {{ isin }} </td>
+                <td> {{ volumes[i] }} </td>
+                <td> {{ '%.2f'%buy_prices[i]|float }} </td>
+                <td> {{ '%.2f'%vp[i]|float }} </td>
+                <td> {{ '%.2f'%bids[i]|float }} </td>
+                {% set profit = (bids[i]-buy_prices[i])*volumes[i] %}
+                {% set style_color = "red" %}
+                {% if profit >= 0 %}
+                    {% set style_color = "green" %}
+                {% endif %}
+                <td> <p style="color:{{ style_color }}">{{ '%.2f'%profit|float }} </p></td>
+                <td> 
+                    <form method="post" action="/sell">
+                        <input type="hidden" id="volume" name="isin" value="{{ volumes[i] }}">
+                        <input type="hidden" id="isin" name="isin" value="{{ isin }}">
+                        <input type="hidden" id="price" name="price" value="test">
+                        <input type="submit" value="Sell">
+                    </form> 
+                </td>
+            </tr>
+         {% endfor %}
+        </table>
+      
+</body>
+</html>
