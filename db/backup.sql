@@ -7324,4 +7324,11 @@ INSERT INTO Tickers VALUES('ZWS','Zurn Elkay Water Solutions Corporation Common 
 INSERT INTO Tickers VALUES('ZYME','Zymeworks Inc. Common Stock');
 INSERT INTO Tickers VALUES('ZYNE','Zynerba Pharmaceuticals Inc. Common Stock');
 INSERT INTO Tickers VALUES('ZYXI','Zynex Inc. Common Stock');
+CREATE TABLE my_stock_values(
+   ISIN           TEXT     NOT NULL,
+   buy_price      FLOAT    NOT NULL,
+   volume         INT      NOT NULL
+);
+INSERT INTO my_stock_values VALUES('A',120.10999999999999943,100);
+INSERT INTO my_stock_values VALUES('A',113.4200000000000017,200);
 COMMIT;

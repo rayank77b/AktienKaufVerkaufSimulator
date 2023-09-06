@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, redirect, request
 import yfinance as yf
 import sqlite3
 
@@ -29,6 +29,7 @@ def isin_name_info(isin):
     data = {}
     volumes = {}
     prices = {}
+    vp = {}
     
     conn = sqlite3.connect(db_name)
     cursor = conn.execute("SELECT ISIN, Name from Tickers WHERE ISIN = ?", (isin,))
@@ -37,8 +38,7 @@ def isin_name_info(isin):
         data['name'] = row[1]
     
     stock = yf.Ticker(isin)
-    price = stock.info['currentPrice']
-    data['price'] = price
+    data['price'] = stock.info['ask']
     
     cursor = conn.execute("SELECT * from my_stock_values WHERE ISIN = ?", (isin,))
     sqldata = cursor.fetchall()
@@ -50,10 +50,24 @@ def isin_name_info(isin):
         for row in sqldata:
             volumes[cnt] = row[2]
             prices[cnt] = row[1]
+            vp[cnt] = float(row[2])*float(row[1])
             cnt = cnt + 1
     
     conn.close()
-    return render_template('isin.html', data = data, volumes = volumes, prices = prices)
+    return render_template('isin.html', data = data, volumes = volumes, prices = prices, vp = vp)
+
+@app.route('/buy', methods=['POST'])
+def buy_stock():
+    isin = request.form['isin']
+    price = float(request.form['price'])
+    price = price * 1.01   # we should pay 1% for buying
+    volume = int(request.form['volume'])
+    sql = ''' INSERT INTO my_stock_values(ISIN,buy_price,volume) VALUES(?,?,?) '''
+    conn = sqlite3.connect(db_name)
+    conn.execute(sql, (isin,price,volume))
+    conn.commit()
+    conn.close()
+    return redirect("/isin/%s"%isin, code=302)
 
 if __name__ =='__main__':
     app.run(debug = WE_DEBUG)    

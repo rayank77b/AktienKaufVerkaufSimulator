@@ -3,30 +3,43 @@
 <body>
     <table border = 1>
         <tr>
-            <th> ISIN </th><td> {{data['isin']}} </td>
+            <th> ISIN </th><td> {{ data['isin'] }} </td>
         </tr>
         <tr>
-            <th> Name </th><td> {{data['name']}} </td>
+            <th> Name </th><td> {{ data['name'] }} </td>
         </tr>
         <tr>
-            <th> Price </th><td> {{data['price']}} </td>
+            <th> Price </th><td> {{ '%.2f'%data['price']|float }} </td>
         </tr>
     </table>
+    <br>
+    
+    <form method="post" action="/buy">
+        <label for="Volumen">Volumen</label>
+        <input name="volume" id="volume" value="100" required>
+        <input type="hidden" id="isin" name="isin" value="{{ data['isin'] }}">
+        <input type="hidden" id="price" name="price" value="{{ data['price'] }}">
+        <input type="submit" value="Buy">
+    </form>
       
     <br>
     {% if data['we_have_it'] %}
-        Your Stock Values are
-        <table border = 1>
+    Your Stock Values are
+    <table border = 1>
         <tr><th>Volume</th><th>Price</th><th>Sum</th><th>Profit</th></tr>
-         {% for volumeid, volume in volumes.items() %}
+        {% for volumeid, volume in volumes.items() %}
             {% set sum = 0 %}
+            {% set price = prices[volumeid] %}
             <tr>
-               <td> {{ volume }} </td>
-               <td> {{ prices[volumeid] }} </td>
-               <td> {{ volume*prices[volumeid] }} </td>
-               {% set profit = (data['price']-prices[volumeid])*volume %}
-               <td> {{ '%.2f'%profit|float }} </td>
-               
+                <td> {{ volume }} </td>
+                <td> {{ '%.2f'%price|float }} </td>
+                <td> {{ '%.2f'%vp[volumeid]|float }} </td>
+                {% set profit = (data['price']-price)*volume %}
+                {% set style_color = "red" %}
+                {% if profit >= 0 %}
+                    {% set style_color = "green" %}
+                {% endif %}
+                <td> <p style="color:{{ style_color }}">{{ '%.2f'%profit|float }} </p></td>
             </tr>
          {% endfor %}
         </table>
